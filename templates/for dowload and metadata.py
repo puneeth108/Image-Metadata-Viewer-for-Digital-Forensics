@@ -3,6 +3,7 @@ import hashlib
 from PIL import Image
 from PIL.ExifTags import TAGS
 import PyPDF2
+import matplotlib.pyplot as plt
 
 def extract_image_metadata(image_path):
     """Extract EXIF metadata from an image file and perform hash comparison."""
@@ -39,8 +40,10 @@ def extract_image_metadata(image_path):
         known_hash = input("Enter the known SHA-256 hash to compare (or press Enter to skip): ")
         if known_hash:
             compare_hashes(image_hash, known_hash)
+            plot_hash_comparison(image_hash, known_hash)
         else:
             print("No known hash provided for comparison.")
+            plot_hash_comparison(image_hash)  # Always plot the graph even if no known hash is given.
     except Exception as e:
         print(f"Error processing image: {e}")
 
@@ -79,8 +82,10 @@ def extract_pdf_metadata(pdf_path):
         known_hash = input("Enter the known SHA-256 hash to compare (or press Enter to skip): ")
         if known_hash:
             compare_hashes(file_hash, known_hash)
+            plot_hash_comparison(file_hash, known_hash)
         else:
             print("No known hash provided for comparison.")
+            plot_hash_comparison(file_hash)  # Always plot the graph even if no known hash is given.
     except Exception as e:
         print(f"Error processing PDF: {e}")
 
@@ -107,6 +112,24 @@ def analyze_whatsapp_image(image_path):
         
     except Exception as e:
         print(f"Error analyzing WhatsApp image: {e}")
+
+def plot_hash_comparison(calculated_hash, known_hash=None):
+    """Plot the comparison of two SHA-256 hashes as a bar graph."""
+    hashes = ["Calculated Hash"]
+    lengths = [len(calculated_hash)]
+    
+    if known_hash:
+        hashes.append("Known Hash")
+        lengths.append(len(known_hash))
+    else:
+        hashes.append("Known Hash (Not Provided)")
+        lengths.append(0)  # Placeholder for missing known hash
+
+    plt.bar(hashes, lengths, color=['blue', 'green'])
+    plt.xlabel('Hash Types')
+    plt.ylabel('Length of Hash (characters)')
+    plt.title('Hash Comparison (SHA-256)')
+    plt.show()
 
 def main():
     """Main function to run the file analysis tool."""
